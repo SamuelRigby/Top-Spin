@@ -5,7 +5,8 @@ using UnityEngine.Audio;
 /// <summary>
 /// Génère des sons ponctuels 3D à des positions aléatoires autour d'un Transform de référence
 /// (craquements, grincements, débris...). Ne gère ni les ambiances continues, ni les sons de gameplay.
-/// Dépend uniquement de RandomAudioContainer (TryPick, HasClips, Validate).
+/// Dépend de RandomAudioContainer (sélection, réglages spatiaux) et RandomAudioVoice (lecture, fades).
+/// Les clips en Loop sont joués en lecture unique : un Soundscape ne génère que des événements ponctuels.
 /// </summary>
 public class Soundscape : MonoBehaviour
 {
@@ -44,6 +45,7 @@ public class Soundscape : MonoBehaviour
     [Header("Spatialisation 3D")]
     [SerializeField, Min(0.01f)] private float minDistance = 2f;
     [SerializeField, Min(0.01f)] private float maxDistance = 40f;
+    [Tooltip("Rolloff utilisé par les containers SANS courbe de volume personnalisée.")]
     [SerializeField] private AudioRolloffMode rolloffMode = AudioRolloffMode.Logarithmic;
     [Tooltip("Optionnel : AudioMixerGroup de sortie (ex. groupe SFX / Ambiance).")]
     [SerializeField] private AudioMixerGroup outputGroup;
@@ -55,7 +57,7 @@ public class Soundscape : MonoBehaviour
     [SerializeField] private bool debugLogs = false;
     [SerializeField] private bool drawGizmos = true;
 
-    private readonly List<AudioSource> _voices = new List<AudioSource>();
+    private readonly List<RandomAudioVoice> _voices = new List<RandomAudioVoice>();
     private bool _isRunning;
     private float _timer;
     private bool _warnedMissingReference;
@@ -83,6 +85,18 @@ public class Soundscape : MonoBehaviour
 
         _isRunning = false;
         if (debugLogs) Debug.Log("[Soundscape] Arrêté.", this);
+    }
+
+    /// <summary>
+    /// Éteint les sons en cours avec le fade-out de chaque clip (0 = coupure immédiate).
+    /// À combiner avec StopSoundscape() pour un arrêt complet en douceur.
+    /// </summary>
+    public void FadeOutActiveSounds()
+    {
+        for (int i = 0; i < _voices.Count; i++)
+        {
+            if (_voices[i] != null) _voices[i].Stop();
+        }
     }
 
     // ------------------------------------------------------------- Unity
@@ -148,17 +162,19 @@ public class Soundscape : MonoBehaviour
             return;
         }
 
-        if (!container.TryPick(out AudioPick pick)) return;
+        // forceOneShot : le Loop des clips est ignoré (sinon un son en boucle occuperait un slot à jamais).
+        if (!container.TryPick(out AudioPick pick, true)) return;
 
         Vector3 position = RandomPositionAround(GetCenter());
-        PlayAt(position, pick);
+        PlayAt(position, pick, container);
 
         _lastSpawnPosition = position;
         _hasLastSpawn = true;
 
         if (debugLogs)
         {
-            Debug.Log($"[Soundscape] '{pick.Clip.name}' à {position} (vol {pick.Volume:F2}, pitch {pick.Pitch:F2}) " +
+            Debug.Log($"[Soundscape] '{pick.Clip.name}' à {position} (vol {pick.Volume:F2}, pitch {pick.Pitch:F2}, " +
+                      $"offset {pick.StartOffset:F2}s, fade {pick.FadeIn:F2}/{pick.FadeOut:F2}s) " +
                       $"- {_voices.Count}/{maxSimultaneousSounds} sons actifs.", this);
         }
     }
@@ -228,49 +244,39 @@ public class Soundscape : MonoBehaviour
 
     // ------------------------------------------------------------- lecture
 
-    private void PlayAt(Vector3 position, AudioPick pick)
+    private void PlayAt(Vector3 position, AudioPick pick, RandomAudioContainer container)
     {
         // GameObject non parenté : il reste en place même si le joueur (ou ce Soundscape) bouge.
         GameObject go = new GameObject("Soundscape Voice");
         go.transform.position = position;
 
         AudioSource source = go.AddComponent<AudioSource>();
-        source.clip = pick.Clip;
-        source.volume = pick.Volume;
-        source.pitch = pick.Pitch;
-        source.loop = false;
         source.playOnAwake = false;
         source.outputAudioMixerGroup = outputGroup;
 
         source.spatialBlend = 1f; // 100 % 3D
-        source.rolloffMode = rolloffMode;
         source.minDistance = Mathf.Max(0.01f, minDistance);
         source.maxDistance = Mathf.Max(source.minDistance, maxDistance);
         source.dopplerLevel = 0f; // source immobile : pas d'effet Doppler parasite
 
-        source.Play();
-        _voices.Add(source);
+        // Distances définies AVANT : rolloff (preset ou courbe perso), spread, bypass reverb zones.
+        container.ConfigureSource(source, rolloffMode);
 
-        // Sécurité : l'objet est détruit même si ce composant disparaît avant la fin du son.
-        float lifetime = pick.Clip.length / Mathf.Max(0.01f, pick.Pitch) + 0.25f;
-        Destroy(go, lifetime);
+        // La voix gère fades / offset et détruit elle-même le GameObject à la fin du son.
+        RandomAudioVoice voice = go.AddComponent<RandomAudioVoice>();
+        voice.DestroyGameObjectWhenFinished = true;
+        voice.Begin(pick);
+
+        _voices.Add(voice);
     }
 
     private void CleanupFinishedVoices()
     {
         for (int i = _voices.Count - 1; i >= 0; i--)
         {
-            AudioSource voice = _voices[i];
-
-            if (voice == null) // déjà détruit par le timer de sécurité
-            {
+            RandomAudioVoice voice = _voices[i];
+            if (voice == null || voice.IsFinished) // le GameObject est détruit par la voix elle-même
                 _voices.RemoveAt(i);
-            }
-            else if (!voice.isPlaying)
-            {
-                Destroy(voice.gameObject);
-                _voices.RemoveAt(i);
-            }
         }
     }
 

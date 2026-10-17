@@ -8,9 +8,7 @@ public class CustomGravity : MonoBehaviour
     [SerializeField] private float _gravityMagnitude = 9.81f;
     [SerializeField] private float _centrifugalMagnitude = 9.81f;
     [SerializeField] private float _maxRadialDistance = 100f;
-    private float RadialDistance => (Vector3.zero - transform.position).magnitude;
     private float _gravityMultiplier;
-    private float _centrifugalMultiplier;
     private int _touchingWorldCount;
     private bool IsCollidingWorld => _touchingWorldCount > 0;
     private Rigidbody _rigidbody;
@@ -39,29 +37,16 @@ public class CustomGravity : MonoBehaviour
         return new Vector3(vector3D.x, vector3D.y, 0).normalized;
     }
 
-    public Vector3 GetCentrifugalDirection()
-    {
-        Vector2 centrifugalDirection = Vector2.Perpendicular((Vector2)GetGravityDirection());
-        return (Vector3)centrifugalDirection.normalized;
-    }
-
     private void ApplyGravity()
     {
         Vector3 gravityForce = _gravityMultiplier * _gravityMagnitude * GetGravityDirection();
-        Vector3 centrifugalForce = Vector3.zero;
-        if (!IsCollidingWorld)
-        {
-            centrifugalForce = _centrifugalMultiplier * _centrifugalMagnitude * GetCentrifugalDirection();
-        }
-
-        Vector3 compositeForce = gravityForce + centrifugalForce;
+        Vector3 compositeForce = gravityForce;
         _rigidbody.AddForce(compositeForce, ForceMode.Acceleration);
     }
 
     private void CalculateMultipliers()
     {
-        _gravityMultiplier = RadialDistance / _maxRadialDistance;
-        _centrifugalMultiplier = 1 - RadialDistance / _maxRadialDistance;
+        _gravityMultiplier = (Vector3.zero - transform.position).magnitude / _maxRadialDistance;
     }
 
     private void OnCollisionEnter(Collision collision)

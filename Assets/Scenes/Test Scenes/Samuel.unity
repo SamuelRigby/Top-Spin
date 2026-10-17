@@ -419,15 +419,15 @@ PrefabInstance:
     - target: {fileID: 5535268746558646481, guid: 6ce969269c26f6646a6f0b291b15ccba, type: 3}
       propertyPath: footstepJump
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1226911893}
     - target: {fileID: 5535268746558646481, guid: 6ce969269c26f6646a6f0b291b15ccba, type: 3}
       propertyPath: footstepLand
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 2018954808}
     - target: {fileID: 5535268746558646481, guid: 6ce969269c26f6646a6f0b291b15ccba, type: 3}
       propertyPath: footstepWalk
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1991219271}
     - target: {fileID: 6136131586388764219, guid: 6ce969269c26f6646a6f0b291b15ccba, type: 3}
       propertyPath: m_PlayOnAwake
       value: 0
@@ -6784,6 +6784,17 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1189036102}
   m_CullTransparentMesh: 1
+--- !u!114 &1226911893 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8331589365568040135, guid: ab1541c4a09486e43b2cce4c3d55d5d2, type: 3}
+  m_PrefabInstance: {fileID: 266662311}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59beca6498482db42821078ebba081cc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RandomSfxPlayer
 --- !u!1 &1229027292
 GameObject:
   m_ObjectHideFlags: 0
@@ -7490,6 +7501,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1876707070}
     m_Modifications:
+    - target: {fileID: 392204701374039857, guid: 8858b27981ea469459907691b0adb0a3, type: 3}
+      propertyPath: m_Volume
+      value: 0.85
+      objectReference: {fileID: 0}
     - target: {fileID: 3664529375249335950, guid: 8858b27981ea469459907691b0adb0a3, type: 3}
       propertyPath: player
       value: 
@@ -10692,6 +10707,28 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1988355340}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &1991219271 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3631841653548024186, guid: ab1541c4a09486e43b2cce4c3d55d5d2, type: 3}
+  m_PrefabInstance: {fileID: 266662311}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59beca6498482db42821078ebba081cc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RandomSfxPlayer
+--- !u!114 &2018954808 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6896742729133082747, guid: ab1541c4a09486e43b2cce4c3d55d5d2, type: 3}
+  m_PrefabInstance: {fileID: 266662311}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59beca6498482db42821078ebba081cc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RandomSfxPlayer
 --- !u!1001 &2023416906
 PrefabInstance:
   m_ObjectHideFlags: 0

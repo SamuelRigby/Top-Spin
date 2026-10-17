@@ -2,6 +2,9 @@ using UnityEngine;
 
 public class Repairable : MonoBehaviour
 {
+    [Header("sfx_OrbePlayerInteract")]
+    [SerializeField] private RandomSfxPlayer sfx_orbe_PlayerInteract;
+    
     [SerializeField] GameObject _textPopupPrefab;
     [SerializeField] float _textYOffset;
     private GameObject _interactPrompt;
@@ -29,6 +32,7 @@ public class Repairable : MonoBehaviour
             Objectives.Instance.ObjectivesCount--;
             Objectives.Instance.WinCheck();
             Destroy(gameObject);
+            OrbePlayerInteract();
         }
     }
 
@@ -52,4 +56,13 @@ public class Repairable : MonoBehaviour
             _playerInRange = false;
         }
     }
+    
+    // AUDIO
+    public void OrbePlayerInteract() => Play(sfx_orbe_PlayerInteract);
+    private void Play(RandomSfxPlayer player)
+    {
+        if (player != null)
+            player.Play();
+    }
+    
 }

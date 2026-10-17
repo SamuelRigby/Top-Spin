@@ -5,6 +5,9 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(PlayerController))]
 public class PlayerRepair : MonoBehaviour
 {
+    
+ 
+    
     private InputSystem_Actions _playerInput;
     private InputSystem_Actions.PlayerActions _playerActions;
     private InputAction _playerInteractAction;
@@ -35,4 +38,6 @@ public class PlayerRepair : MonoBehaviour
     {
         InteractEvent.Invoke();
     }
+    
+   
 }

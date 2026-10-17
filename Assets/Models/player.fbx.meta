@@ -114,14 +114,14 @@ ModelImporter:
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
       curves: []
       events:
-      - time: 0.2990194
+      - time: 0.17394564
         functionName: ClothWalk
         data: 
         objectReferenceParameter: {instanceID: 0}
         floatParameter: 0
         intParameter: 0
         messageOptions: 0
-      - time: 0.45517293
+      - time: 0.32065967
         functionName: FootstepJump
         data: 
         objectReferenceParameter: {instanceID: 0}
@@ -157,15 +157,15 @@ ModelImporter:
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
       curves: []
       events:
-      - time: 0.21164708
-        functionName: FootstepLand
+      - time: 0.045891237
+        functionName: ClothWalk
         data: 
         objectReferenceParameter: {instanceID: 0}
         floatParameter: 0
         intParameter: 0
         messageOptions: 0
-      - time: 0.35739568
-        functionName: ClothWalk
+      - time: 0.1833285
+        functionName: FootstepLand
         data: 
         objectReferenceParameter: {instanceID: 0}
         floatParameter: 0

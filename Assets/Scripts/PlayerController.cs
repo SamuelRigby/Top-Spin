@@ -4,12 +4,14 @@ using UnityEngine.InputSystem;
 [DefaultExecutionOrder(-100)]
 [RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(CustomGravity))]
+[RequireComponent(typeof(GroundCheck))]
 public class PlayerController : MonoBehaviour
 {
     public InputActionAsset inputActions;
 
     [SerializeField] private float playerWalkSpeed = 5f;
     [SerializeField] private float rotationSharpness = 12f;
+    [SerializeField] private float jumpSpeed = 5f;
 
     [Header("Camera")]
     [SerializeField] private Transform cameraTransform;
@@ -17,9 +19,13 @@ public class PlayerController : MonoBehaviour
 
     private InputActionMap playerActionMap;
     private InputAction playerMoveAction;
+    private InputAction playerJumpAction;
 
     private Rigidbody playerRigidbody;
     private CustomGravity customGravity;
+    private GroundCheck groundCheck;
+    private bool jumpRequested;
+    private bool hasJumped;
     private Vector2 playerMoveAmount;
 
     private Vector3 LocalUp
@@ -38,9 +44,11 @@ public class PlayerController : MonoBehaviour
     {
         playerActionMap = inputActions.FindActionMap("Player", true);
         playerMoveAction = playerActionMap.FindAction("Move", true);
+        playerJumpAction = playerActionMap.FindAction("Jump", true);
 
         playerRigidbody = GetComponent<Rigidbody>();
         customGravity = GetComponent<CustomGravity>();
+        groundCheck = GetComponent<GroundCheck>();
 
         SetupRigidbody();
 
@@ -57,16 +65,19 @@ public class PlayerController : MonoBehaviour
     {
         playerActionMap.Disable();
         playerMoveAmount = Vector2.zero;
+        jumpRequested = false;
     }
 
     private void Update()
     {
         playerMoveAmount = playerMoveAction.ReadValue<Vector2>();
+        jumpRequested |= playerJumpAction.WasPressedThisFrame();
     }
 
     private void FixedUpdate()
     {
         PlayerMoveAndRotate();
+        PlayerJump();
     }
 
     private void PlayerMoveAndRotate()
@@ -76,6 +87,28 @@ public class PlayerController : MonoBehaviour
 
         ApplyMovement(moveDirection, localUp);
         RotatePlayer(moveDirection, localUp);
+    }
+
+    private void PlayerJump()
+    {
+        bool isGrounded = groundCheck.IsGrounded;
+
+        if (!isGrounded)
+        {
+            hasJumped = false;
+        }
+
+        if (jumpRequested && isGrounded && !hasJumped)
+        {
+            Vector3 localUp = LocalUp;
+            Vector3 surfaceVelocity =
+                Vector3.ProjectOnPlane(playerRigidbody.linearVelocity, localUp);
+
+            playerRigidbody.linearVelocity = surfaceVelocity + localUp * jumpSpeed;
+            hasJumped = true;
+        }
+
+        jumpRequested = false;
     }
 
     private void SetupRigidbody()

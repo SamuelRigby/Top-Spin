@@ -3,6 +3,7 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(CapsuleCollider))]
 [RequireComponent(typeof(GroundCheck))]
+[DefaultExecutionOrder(-100)]
 public class CustomGravity : MonoBehaviour
 {
     [SerializeField] private float _gravityMagnitude = 9.81f;

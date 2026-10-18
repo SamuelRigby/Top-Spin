@@ -1,55 +1,65 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+
+[DefaultExecutionOrder(-100)]
 [RequireComponent(typeof(Rigidbody))]
+[RequireComponent(typeof(CustomGravity))]
 public class PlayerController : MonoBehaviour
 {
     public InputActionAsset inputActions;
-    public InputActionMap playerActionMap;
 
-    private InputAction playerMoveAction;
-    private InputAction playerJumpAction;
-
-    private float playerWalkSpeed = 5f;
-    private float playerRotateDampening = 0.1f;
-    private float turnSmoothingVelocity;
-
-    private float verticalVelocity = 0f;
-    private float grav = -10f;
-    private float jumpHeight = 2f;
-
-    private Vector2 playerMoveAmount;
-
-    private Rigidbody playerRigidbody;
+    [SerializeField] private float playerWalkSpeed = 5f;
+    [SerializeField] private float rotationSharpness = 12f;
 
     [Header("Camera")]
     [SerializeField] private Transform cameraTransform;
+    [SerializeField] private Transform cameraUp;
 
-    private void OnEnable()
+    private InputActionMap playerActionMap;
+    private InputAction playerMoveAction;
+
+    private Rigidbody playerRigidbody;
+    private CustomGravity customGravity;
+    private Vector2 playerMoveAmount;
+
+    private Vector3 LocalUp
     {
-        playerActionMap = inputActions.FindActionMap("Player");
-        playerActionMap.Enable();
-    }
-    private void OnDisable()
-    {
-        playerActionMap.Disable();
+        get
+        {
+            Vector3 gravityDirection = customGravity.GetGravityDirection();
+
+            return gravityDirection.sqrMagnitude > 0.0001f
+                ? -gravityDirection.normalized
+                : transform.up;
+        }
     }
 
     private void Awake()
     {
-        playerActionMap = inputActions.FindActionMap("Player");
-        playerMoveAction = playerActionMap.FindAction("Move");
-        playerJumpAction = playerActionMap.FindAction("Jump");
+        playerActionMap = inputActions.FindActionMap("Player", true);
+        playerMoveAction = playerActionMap.FindAction("Move", true);
+
         playerRigidbody = GetComponent<Rigidbody>();
-        playerRigidbody.constraints |= RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ; //freezes rotations
+        customGravity = GetComponent<CustomGravity>();
+
+        SetupRigidbody();
+
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
     }
-    void Start()
+
+    private void OnEnable()
     {
-        
+        playerActionMap.Enable();
     }
 
-    void Update()
+    private void OnDisable()
+    {
+        playerActionMap.Disable();
+        playerMoveAmount = Vector2.zero;
+    }
+
+    private void Update()
     {
         playerMoveAmount = playerMoveAction.ReadValue<Vector2>();
     }
@@ -61,16 +71,98 @@ public class PlayerController : MonoBehaviour
 
     private void PlayerMoveAndRotate()
     {
-        Vector3 playerDirection = new Vector3(playerMoveAmount.x, 0f, playerMoveAmount.y).normalized;
-        Vector3 verticalMove = new Vector3(0f, verticalVelocity, 0f);
+        Vector3 localUp = LocalUp;
+        Vector3 moveDirection = GetMoveDirection(localUp);
 
-        if (playerDirection.magnitude >= 0.1f)
+        ApplyMovement(moveDirection, localUp);
+        RotatePlayer(moveDirection, localUp);
+    }
+
+    private void SetupRigidbody()
+    {
+        playerRigidbody.constraints |= RigidbodyConstraints.FreezeRotation;
+        playerRigidbody.interpolation = RigidbodyInterpolation.Interpolate;
+        playerRigidbody.useGravity = false;
+    }
+
+    private Vector3 GetCameraForward(Vector3 localUp)
+    {
+        Vector3 cameraForward =
+            Vector3.ProjectOnPlane(cameraTransform.forward, localUp);
+
+        if (cameraForward.sqrMagnitude < 0.0001f)
         {
-            float targetAngle = Mathf.Atan2(playerDirection.x, playerDirection.z) * Mathf.Rad2Deg + cameraTransform.eulerAngles.y;
-            float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref turnSmoothingVelocity, playerRotateDampening);
-            playerRigidbody.MoveRotation(Quaternion.Euler(0f, angle, 0f));
-            Vector3 moveDir = Quaternion.Euler(0f, targetAngle, 0f) * Vector3.forward;
-            playerRigidbody.MovePosition(playerRigidbody.position + moveDir.normalized * playerWalkSpeed * Time.fixedDeltaTime);
+            cameraForward =
+                Vector3.ProjectOnPlane(cameraTransform.up, localUp);
         }
+
+        return cameraForward.normalized;
+    }
+
+    private Vector3 GetMoveDirection(Vector3 localUp)
+    {
+        Vector3 cameraForward = GetCameraForward(localUp);
+        Vector3 cameraRight =
+            Vector3.Cross(localUp, cameraForward).normalized;
+        Vector2 input = Vector2.ClampMagnitude(playerMoveAmount, 1f);
+
+        return cameraForward * input.y + cameraRight * input.x;
+    }
+
+    private void ApplyMovement(Vector3 moveDirection, Vector3 localUp)
+    {
+        Vector3 radialVelocity =
+            Vector3.Project(playerRigidbody.linearVelocity, localUp);
+
+        playerRigidbody.linearVelocity =
+            radialVelocity + moveDirection * playerWalkSpeed;
+    }
+
+    private void RotatePlayer(Vector3 moveDirection, Vector3 localUp)
+    {
+        Vector3 facingDirection = Vector3.ProjectOnPlane(
+            playerRigidbody.rotation * Vector3.forward,
+            localUp
+        );
+
+        if (moveDirection.sqrMagnitude > 0.0001f)
+        {
+            facingDirection = moveDirection;
+        }
+        else if (facingDirection.sqrMagnitude < 0.0001f)
+        {
+            facingDirection = GetCameraForward(localUp);
+        }
+
+        Quaternion targetRotation =
+            Quaternion.LookRotation(facingDirection.normalized, localUp);
+
+        float smoothing =
+            1f - Mathf.Exp(-rotationSharpness * Time.fixedDeltaTime);
+
+        playerRigidbody.MoveRotation(
+            Quaternion.Slerp(
+                playerRigidbody.rotation,
+                targetRotation,
+                smoothing
+            )
+        );
+    }
+
+    private void LateUpdate()
+    {
+        UpdateCameraUp();
+    }
+
+    private void UpdateCameraUp()
+    {
+        if (cameraUp == null)
+        {
+            return;
+        }
+
+        cameraUp.rotation =
+            Quaternion.FromToRotation(cameraUp.up, LocalUp)
+            * cameraUp.rotation;
     }
 }

@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Unity.Cinemachine;
+using Unity.Cinemachine.TargetTracking;
 
 [DefaultExecutionOrder(-100)]
 [RequireComponent(typeof(Rigidbody))]
@@ -34,6 +36,8 @@ public class PlayerController : MonoBehaviour
     private CustomGravity customGravity;
     private GroundCheck groundCheck;
     private Animator animator;
+    private Transform cameraFollowTarget;
+    private bool ownsCameraUp;
     private bool jumpRequested;
     private bool hasJumped;
     private Vector2 playerMoveAmount;
@@ -72,6 +76,58 @@ public class PlayerController : MonoBehaviour
     private void OnEnable()
     {
         playerActionMap.Enable();
+    }
+
+    private void Start()
+    {
+        // Use a separate frame so camera-relative movement cannot feed the
+        // player's steering rotation back into the camera orbit.
+        if (cameraUp == null || cameraUp == transform || cameraUp.IsChildOf(transform))
+        {
+            cameraUp = new GameObject("Player Camera Frame").transform;
+            ownsCameraUp = true;
+        }
+
+        cameraUp.rotation = Quaternion.FromToRotation(Vector3.up, transform.up);
+        foreach (CinemachineCamera camera in FindObjectsByType<CinemachineCamera>(FindObjectsSortMode.None))
+        {
+            Transform target = camera.Follow;
+            if (target == null || (target != transform && !target.IsChildOf(transform)))
+                continue;
+
+            cameraFollowTarget = target;
+            cameraUp.position = target.position;
+            camera.Follow = cameraUp;
+            CinemachineOrbitalFollow orbit = camera.GetComponent<CinemachineOrbitalFollow>();
+            if (orbit != null)
+            {
+                orbit.TrackerSettings.BindingMode = BindingMode.LockToTarget;
+                orbit.TrackerSettings.PositionDamping = Vector3.zero;
+                orbit.TrackerSettings.RotationDamping = Vector3.zero;
+                orbit.TrackerSettings.QuaternionDamping = 0f;
+            }
+        }
+
+        Camera outputCamera = cameraTransform != null
+            ? cameraTransform.GetComponent<Camera>() : Camera.main;
+        if (outputCamera != null)
+        {
+            cameraTransform = outputCamera.transform;
+            if (outputCamera.TryGetComponent(out CinemachineBrain brain))
+            {
+                brain.WorldUpOverride = cameraUp;
+                // The proxy is moved in LateUpdate from the interpolated player
+                // pose, so Cinemachine must sample it on the render clock too.
+                brain.UpdateMethod = CinemachineBrain.UpdateMethods.LateUpdate;
+                brain.BlendUpdateMethod = CinemachineBrain.BrainUpdateMethods.LateUpdate;
+            }
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (ownsCameraUp && cameraUp != null)
+            Destroy(cameraUp.gameObject);
     }
 
     private void OnDisable()
@@ -289,7 +345,9 @@ public class PlayerController : MonoBehaviour
         }
 
         cameraUp.rotation =
-            Quaternion.FromToRotation(cameraUp.up, LocalUp)
+            Quaternion.FromToRotation(cameraUp.up, transform.up)
             * cameraUp.rotation;
+        if (cameraFollowTarget != null)
+            cameraUp.position = cameraFollowTarget.position;
     }
 }

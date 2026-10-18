@@ -9,6 +9,9 @@ public class CylinderRotation : MonoBehaviour
     void Awake()
     {
         _rigidBody = GetComponent<Rigidbody>();
+        // Match the player's interpolation so the level and camera render
+        // the same point between physics steps.
+        _rigidBody.interpolation = RigidbodyInterpolation.Interpolate;
     }
 
     void FixedUpdate()

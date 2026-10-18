@@ -17,6 +17,11 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Transform cameraTransform;
     [SerializeField] private Transform cameraUp;
 
+    private static readonly int SpeedHash = Animator.StringToHash("Speed");
+    private static readonly int IsGroundedHash = Animator.StringToHash("IsGrounded");
+    private static readonly int VerticalSpeedHash = Animator.StringToHash("VerticalSpeed");
+    private static readonly int JumpHash = Animator.StringToHash("Jump");
+
     private InputActionMap playerActionMap;
     private InputAction playerMoveAction;
     private InputAction playerJumpAction;
@@ -24,6 +29,7 @@ public class PlayerController : MonoBehaviour
     private Rigidbody playerRigidbody;
     private CustomGravity customGravity;
     private GroundCheck groundCheck;
+    private Animator animator;
     private bool jumpRequested;
     private bool hasJumped;
     private Vector2 playerMoveAmount;
@@ -49,6 +55,7 @@ public class PlayerController : MonoBehaviour
         playerRigidbody = GetComponent<Rigidbody>();
         customGravity = GetComponent<CustomGravity>();
         groundCheck = GetComponent<GroundCheck>();
+        animator = GetComponentInChildren<Animator>();
 
         SetupRigidbody();
 
@@ -72,12 +79,31 @@ public class PlayerController : MonoBehaviour
     {
         playerMoveAmount = playerMoveAction.ReadValue<Vector2>();
         jumpRequested |= playerJumpAction.WasPressedThisFrame();
+
+        UpdateAnimator();
     }
 
     private void FixedUpdate()
     {
         PlayerMoveAndRotate();
         PlayerJump();
+    }
+
+    private void UpdateAnimator()
+    {
+        if (animator == null)
+        {
+            return;
+        }
+        
+        float animSpeed = Vector2.ClampMagnitude(playerMoveAmount, 1f).magnitude;
+        animator.SetFloat(SpeedHash, animSpeed, 0.1f, Time.deltaTime);
+        animator.SetBool(IsGroundedHash, groundCheck.IsGrounded);
+        
+        animator.SetFloat(
+            VerticalSpeedHash,
+            Vector3.Dot(playerRigidbody.linearVelocity, LocalUp)
+        );
     }
 
     private void PlayerMoveAndRotate()
@@ -106,6 +132,11 @@ public class PlayerController : MonoBehaviour
 
             playerRigidbody.linearVelocity = surfaceVelocity + localUp * jumpSpeed;
             hasJumped = true;
+
+            if (animator != null)
+            {
+                animator.SetTrigger(JumpHash);
+            }
         }
 
         jumpRequested = false;

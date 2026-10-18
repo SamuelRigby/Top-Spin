@@ -46,7 +46,6 @@ GameObject:
   - component: {fileID: 7524598352375879650}
   - component: {fileID: 2540178685915749601}
   - component: {fileID: 3604913788725739136}
-  - component: {fileID: 3579868451983221420}
   - component: {fileID: 7587806036777466841}
   - component: {fileID: 3943472431059238961}
   - component: {fileID: 6444783411152068889}
@@ -139,9 +138,9 @@ CapsuleCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 0.5
-  m_Height: 1
+  m_Height: 2
   m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Center: {x: 0, y: 1, z: 0}
 --- !u!114 &2540178685915749601
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -169,29 +168,6 @@ MonoBehaviour:
   _gravityMagnitude: 9.81
   _centrifugalMagnitude: 9.81
   _maxRadialDistance: 100
---- !u!136 &3579868451983221420
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6572671758056944033}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.5
-  m_Height: 1
-  m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &7587806036777466841
 MonoBehaviour:
   m_ObjectHideFlags: 0

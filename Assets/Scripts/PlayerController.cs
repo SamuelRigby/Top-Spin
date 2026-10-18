@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -13,6 +14,9 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float rotationSharpness = 12f;
     [SerializeField] private float jumpSpeed = 5f;
 
+    [Header("Moving Ground")]
+    [SerializeField] private CylinderRotation cylinder;
+
     [Header("Camera")]
     [SerializeField] private Transform cameraTransform;
     [SerializeField] private Transform cameraUp;
@@ -27,6 +31,8 @@ public class PlayerController : MonoBehaviour
     private bool jumpRequested;
     private bool hasJumped;
     private Vector2 playerMoveAmount;
+    private readonly Dictionary<Collider, ContactPoint[]> movementContacts =
+        new Dictionary<Collider, ContactPoint[]>();
 
     private Vector3 LocalUp
     {
@@ -66,6 +72,7 @@ public class PlayerController : MonoBehaviour
         playerActionMap.Disable();
         playerMoveAmount = Vector2.zero;
         jumpRequested = false;
+        movementContacts.Clear();
     }
 
     private void Update()
@@ -116,6 +123,7 @@ public class PlayerController : MonoBehaviour
         playerRigidbody.constraints |= RigidbodyConstraints.FreezeRotation;
         playerRigidbody.interpolation = RigidbodyInterpolation.Interpolate;
         playerRigidbody.useGravity = false;
+        playerRigidbody.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
     }
 
     private Vector3 GetCameraForward(Vector3 localUp)
@@ -144,11 +152,66 @@ public class PlayerController : MonoBehaviour
 
     private void ApplyMovement(Vector3 moveDirection, Vector3 localUp)
     {
-        Vector3 radialVelocity =
-            Vector3.Project(playerRigidbody.linearVelocity, localUp);
+        Vector3 groundVelocity = Vector3.zero;
 
-        playerRigidbody.linearVelocity =
-            radialVelocity + moveDirection * playerWalkSpeed;
+        if (cylinder != null && groundCheck.IsGrounded && !hasJumped)
+        {
+            groundVelocity = cylinder.GetSurfaceVelocity(playerRigidbody.position);
+        }
+
+        // Preserve motion into/away from the ground relative to its movement.
+        Vector3 relativeVelocity = playerRigidbody.linearVelocity - groundVelocity;
+        Vector3 radialVelocity =
+            Vector3.Project(relativeVelocity, localUp);
+
+        Vector3 velocity = groundVelocity + radialVelocity + moveDirection * playerWalkSpeed;
+
+        // Keep the wall's separating velocity: replacing it with input every
+        // step makes the controller fight the physics solver as walls rotate in.
+        for (int pass = 0; pass < 3; pass++)
+        {
+            foreach (var entry in movementContacts)
+            {
+                if (entry.Key == null || !entry.Key.enabled)
+                {
+                    continue;
+                }
+
+                Rigidbody body = entry.Key.attachedRigidbody;
+                CylinderRotation rotatingCylinder = body != null
+                    ? body.GetComponent<CylinderRotation>()
+                    : null;
+
+                foreach (ContactPoint contact in entry.Value)
+                {
+                    Vector3 wallVelocity = rotatingCylinder != null
+                        ? rotatingCylinder.GetSurfaceVelocity(contact.point)
+                        : body != null ? body.GetPointVelocity(contact.point) : Vector3.zero;
+                    float inwardSpeed = Vector3.Dot(velocity - wallVelocity, contact.normal);
+                    if (inwardSpeed < 0f)
+                    {
+                        velocity -= contact.normal * inwardSpeed;
+                    }
+                }
+            }
+        }
+
+        playerRigidbody.linearVelocity = velocity;
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        movementContacts[collision.collider] = collision.contacts;
+    }
+
+    private void OnCollisionStay(Collision collision)
+    {
+        movementContacts[collision.collider] = collision.contacts;
+    }
+
+    private void OnCollisionExit(Collision collision)
+    {
+        movementContacts.Remove(collision.collider);
     }
 
     private void RotatePlayer(Vector3 moveDirection, Vector3 localUp)

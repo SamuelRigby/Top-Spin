@@ -13,7 +13,17 @@ public class CylinderRotation : MonoBehaviour
 
     void FixedUpdate()
     {
-        Quaternion deltaRotation = Quaternion.Euler(0, 0, rotationSpeed * Time.deltaTime);
+        Quaternion deltaRotation = Quaternion.Euler(0, 0, rotationSpeed * Time.fixedDeltaTime);
         _rigidBody.MoveRotation(deltaRotation * _rigidBody.rotation);
+    }
+
+    public Vector3 GetSurfaceVelocity(Vector3 worldPosition)
+    {
+        // Match the world Z axis used by FixedUpdate, in radians per second.
+        Vector3 angularVelocity =
+            Vector3.forward * rotationSpeed * Mathf.Deg2Rad;
+        Vector3 offsetFromAxis = worldPosition - _rigidBody.position;
+
+        return Vector3.Cross(angularVelocity, offsetFromAxis);
     }
 }

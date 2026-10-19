@@ -7,7 +7,7 @@ public class Repairable : MonoBehaviour
     private GameObject _interactPrompt;
     private bool _playerInRange = false;
 
-    private void Awake()
+    void Start()
     {
         Objectives.Instance.ObjectivesCount++;
     }

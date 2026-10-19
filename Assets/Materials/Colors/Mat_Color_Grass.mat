@@ -72,7 +72,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Noise:
-        m_Texture: {fileID: 2800000, guid: baf29c18cd4daf44ab3c4a68bf7372b4, type: 3}
+        m_Texture: {fileID: 2800000, guid: 2cffaab7bab2a214598c29cc6643125c, type: 3}
         m_Scale: {x: 0.025, y: 0.025}
         m_Offset: {x: 0, y: 0}
     - _OcclusionMap:
@@ -129,7 +129,7 @@ Material:
     - _Parallax: 0.005
     - _PatchSize: 2
     - _QueueOffset: 0
-    - _RandomRotation: 0.91
+    - _RandomRotation: 1
     - _RandomTiling: 1
     - _ReceiveShadows: 1
     - _Seed: 0

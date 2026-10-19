@@ -45,6 +45,7 @@ GameObject:
   - component: {fileID: 7524598352375879650}
   - component: {fileID: 3581783996945227501}
   - component: {fileID: 5330162937748193935}
+  - component: {fileID: 934848879907177007}
   - component: {fileID: 7587806036777466841}
   - component: {fileID: 3943472431059238961}
   - component: {fileID: 6444783411152068889}
@@ -152,6 +153,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ee614047ab0b7524e83c84bd58821595, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Repair
+--- !u!114 &934848879907177007
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6572671758056944033}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d93f6524b8c07e54f8bd0f4005f803e9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerPause
+  _pausePanel: {fileID: 0}
 --- !u!114 &7587806036777466841
 MonoBehaviour:
   m_ObjectHideFlags: 0

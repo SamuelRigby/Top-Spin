@@ -21,6 +21,8 @@ public class Objectives : MonoBehaviour
     {
         if (ObjectivesCount <= 0)
         {
+            Cursor.lockState = CursorLockMode.Confined;
+            Cursor.visible = true;
             SceneManager.LoadScene("WinScreen");
         }
     }

@@ -2,6 +2,9 @@ using UnityEngine;
 
 public class Repairable : MonoBehaviour
 {
+    [SerializeField] GameObject _textPopupPrefab;
+    [SerializeField] float _textYOffset;
+    private GameObject _interactPrompt;
     private bool _playerInRange = false;
 
     private void Awake()
@@ -32,6 +35,9 @@ public class Repairable : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
+            _interactPrompt = Instantiate(_textPopupPrefab, transform.position + (_textYOffset * transform.up), Quaternion.identity);
+            _interactPrompt.transform.SetParent(transform, true);
+            _interactPrompt.GetComponent<WorldTextPopup>().Init("[E]", 72, Color.white);
             _playerInRange = true;
         }
     }
@@ -40,6 +46,8 @@ public class Repairable : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
+            Destroy(_interactPrompt);
+            _interactPrompt = null;
             _playerInRange = false;
         }
     }

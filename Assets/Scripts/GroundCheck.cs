@@ -6,7 +6,6 @@ using UnityEngine;
 public class GroundCheck : MonoBehaviour
 {
     public bool IsGrounded => _groundColliders.Count > 0;
-
     private readonly HashSet<Collider> _groundColliders = new HashSet<Collider>();
     private CustomGravity _customGravity;
 

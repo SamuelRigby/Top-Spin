@@ -9,7 +9,7 @@ public class Repairable : MonoBehaviour
 
     private void Awake()
     {
-        Objectives.ObjectivesCount++;
+        Objectives.Instance.ObjectivesCount++;
     }
 
     private void OnEnable()
@@ -26,7 +26,8 @@ public class Repairable : MonoBehaviour
     {
         if (_playerInRange)
         {
-            Objectives.ObjectivesCount--;
+            Objectives.Instance.ObjectivesCount--;
+            Objectives.Instance.WinCheck();
             Destroy(gameObject);
         }
     }

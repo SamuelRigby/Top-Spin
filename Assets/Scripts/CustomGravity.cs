@@ -6,7 +6,6 @@ using UnityEngine;
 public class CustomGravity : MonoBehaviour
 {
     [SerializeField] private float _gravityMagnitude = 9.81f;
-    [SerializeField] private float _centrifugalMagnitude = 9.81f;
     [SerializeField] private float _maxRadialDistance = 100f;
     private float _gravityMultiplier;
     private int _touchingWorldCount;
@@ -39,8 +38,9 @@ public class CustomGravity : MonoBehaviour
 
     private void ApplyGravity()
     {
-
-        if (_rigidbody.linearVelocity.y >= _gravityMagnitude)
+        Vector3 gravityDirection = GetGravityDirection();
+        float fallSpeed = Vector3.Dot(_rigidbody.linearVelocity, gravityDirection);
+        if (fallSpeed >= _gravityMagnitude)
         {
             return;
         }

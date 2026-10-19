@@ -158,11 +158,11 @@ public class PlayerController : MonoBehaviour
         {
             return;
         }
-        
+
         float animSpeed = Vector2.ClampMagnitude(playerMoveAmount, 1f).magnitude;
         animator.SetFloat(SpeedHash, animSpeed, 0.1f, Time.deltaTime);
         animator.SetBool(IsGroundedHash, groundCheck.IsGrounded);
-        
+
         animator.SetFloat(
             VerticalSpeedHash,
             Vector3.Dot(playerRigidbody.linearVelocity, LocalUp)
@@ -241,7 +241,7 @@ public class PlayerController : MonoBehaviour
     {
         Vector3 groundVelocity = Vector3.zero;
 
-        if (cylinder != null && groundCheck.IsGrounded && !hasJumped)
+        if (cylinder != null)
         {
             groundVelocity = cylinder.GetSurfaceVelocity(playerRigidbody.position);
         }
@@ -274,10 +274,11 @@ public class PlayerController : MonoBehaviour
                     Vector3 wallVelocity = rotatingCylinder != null
                         ? rotatingCylinder.GetSurfaceVelocity(contact.point)
                         : body != null ? body.GetPointVelocity(contact.point) : Vector3.zero;
+                    float allowedInwardSpeed = Mathf.Max(contact.separation, 0f) / Time.fixedDeltaTime;
                     float inwardSpeed = Vector3.Dot(velocity - wallVelocity, contact.normal);
-                    if (inwardSpeed < 0f)
+                    if (inwardSpeed < -allowedInwardSpeed)
                     {
-                        velocity -= contact.normal * inwardSpeed;
+                        velocity -= contact.normal * (inwardSpeed + allowedInwardSpeed);
                     }
                 }
             }

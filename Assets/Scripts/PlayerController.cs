@@ -10,7 +10,10 @@ using Unity.Cinemachine.TargetTracking;
 [RequireComponent(typeof(GroundCheck))]
 public class PlayerController : MonoBehaviour
 {
-    public InputActionAsset inputActions;
+    private InputSystem_Actions playerInput;
+    private InputSystem_Actions.PlayerActions playerActions;
+    private InputAction playerMoveAction;
+    private InputAction playerJumpAction;
 
     [SerializeField] private float playerWalkSpeed = 5f;
     [SerializeField] private float rotationSharpness = 12f;
@@ -27,10 +30,6 @@ public class PlayerController : MonoBehaviour
     private static readonly int IsGroundedHash = Animator.StringToHash("IsGrounded");
     private static readonly int VerticalSpeedHash = Animator.StringToHash("VerticalSpeed");
     private static readonly int JumpHash = Animator.StringToHash("Jump");
-
-    private InputActionMap playerActionMap;
-    private InputAction playerMoveAction;
-    private InputAction playerJumpAction;
 
     private Rigidbody playerRigidbody;
     private CustomGravity customGravity;
@@ -58,9 +57,10 @@ public class PlayerController : MonoBehaviour
 
     private void Awake()
     {
-        playerActionMap = inputActions.FindActionMap("Player", true);
-        playerMoveAction = playerActionMap.FindAction("Move", true);
-        playerJumpAction = playerActionMap.FindAction("Jump", true);
+        playerInput = new InputSystem_Actions();
+        playerActions = playerInput.Player;
+        playerMoveAction = playerActions.Move;
+        playerJumpAction = playerActions.Jump;
 
         playerRigidbody = GetComponent<Rigidbody>();
         customGravity = GetComponent<CustomGravity>();
@@ -75,7 +75,7 @@ public class PlayerController : MonoBehaviour
 
     private void OnEnable()
     {
-        playerActionMap.Enable();
+        playerInput.Enable();
     }
 
     private void Start()
@@ -132,7 +132,7 @@ public class PlayerController : MonoBehaviour
 
     private void OnDisable()
     {
-        playerActionMap.Disable();
+        playerInput.Disable();
         playerMoveAmount = Vector2.zero;
         jumpRequested = false;
         movementContacts.Clear();

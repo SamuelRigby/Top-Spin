@@ -6,7 +6,7 @@ public class CylinderRotation : MonoBehaviour
     [SerializeField] private float rotationSpeed = 9.81f;
     private Rigidbody _rigidBody;
 
-    void Awake()
+    private void Awake()
     {
         _rigidBody = GetComponent<Rigidbody>();
         // Match the player's interpolation so the level and camera render
@@ -14,7 +14,7 @@ public class CylinderRotation : MonoBehaviour
         _rigidBody.interpolation = RigidbodyInterpolation.Interpolate;
     }
 
-    void FixedUpdate()
+    private void FixedUpdate()
     {
         Quaternion deltaRotation = Quaternion.Euler(0, 0, rotationSpeed * Time.fixedDeltaTime);
         _rigidBody.MoveRotation(deltaRotation * _rigidBody.rotation);

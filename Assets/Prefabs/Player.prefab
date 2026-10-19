@@ -42,16 +42,15 @@ GameObject:
   m_Component:
   - component: {fileID: 8683491602895350002}
   - component: {fileID: 9070327778308462058}
-  - component: {fileID: 3581783996945227501}
   - component: {fileID: 7524598352375879650}
-  - component: {fileID: 2540178685915749601}
-  - component: {fileID: 3604913788725739136}
+  - component: {fileID: 3581783996945227501}
+  - component: {fileID: 5330162937748193935}
   - component: {fileID: 7587806036777466841}
   - component: {fileID: 3943472431059238961}
   - component: {fileID: 6444783411152068889}
   m_Layer: 0
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -100,24 +99,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &3581783996945227501
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6572671758056944033}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3888a18a0a4edc24389f440d863d6da6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerController
-  inputActions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
-  playerWalkSpeed: 5
-  rotationSharpness: 12
-  jumpSpeed: 5
-  cameraTransform: {fileID: 0}
-  cameraUp: {fileID: 0}
 --- !u!136 &7524598352375879650
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -141,7 +122,7 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 1, z: 0}
---- !u!114 &2540178685915749601
+--- !u!114 &3581783996945227501
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -150,10 +131,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 6572671758056944033}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b027b66b983478a48a498c716c18fa94, type: 3}
+  m_Script: {fileID: 11500000, guid: 3888a18a0a4edc24389f440d863d6da6, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::GroundCheck
---- !u!114 &3604913788725739136
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerController
+  playerWalkSpeed: 5
+  rotationSharpness: 12
+  jumpSpeed: 5
+  cylinder: {fileID: 0}
+  cameraTransform: {fileID: 0}
+  cameraUp: {fileID: 0}
+--- !u!114 &5330162937748193935
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -162,12 +149,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 6572671758056944033}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 87ff28edbd420974aae12bb73d73870c, type: 3}
+  m_Script: {fileID: 11500000, guid: ee614047ab0b7524e83c84bd58821595, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CustomGravity
-  _gravityMagnitude: 9.81
-  _centrifugalMagnitude: 9.81
-  _maxRadialDistance: 100
+  m_EditorClassIdentifier: Assembly-CSharp::Repair
 --- !u!114 &7587806036777466841
 MonoBehaviour:
   m_ObjectHideFlags: 0

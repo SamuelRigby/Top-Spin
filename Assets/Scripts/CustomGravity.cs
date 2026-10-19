@@ -2,7 +2,6 @@ using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(CapsuleCollider))]
-[RequireComponent(typeof(GroundCheck))]
 [DefaultExecutionOrder(-100)]
 public class CustomGravity : MonoBehaviour
 {
@@ -14,15 +13,15 @@ public class CustomGravity : MonoBehaviour
     private bool IsCollidingWorld => _touchingWorldCount > 0;
     private Rigidbody _rigidbody;
 
-    void Awake()
+    private void Awake()
     {
+        _maxRadialDistance -= GetComponent<CapsuleCollider>().height / 2;
         _rigidbody = GetComponent<Rigidbody>();
         _rigidbody.useGravity = false;
-        _maxRadialDistance -= GetComponent<CapsuleCollider>().height / 2;
         CalculateMultipliers();
     }
 
-    void FixedUpdate()
+    private void FixedUpdate()
     {
         if (IsCollidingWorld)
         {
@@ -40,6 +39,12 @@ public class CustomGravity : MonoBehaviour
 
     private void ApplyGravity()
     {
+
+        if (_rigidbody.linearVelocity.y >= _gravityMagnitude)
+        {
+            return;
+        }
+
         Vector3 gravityForce = _gravityMultiplier * _gravityMagnitude * GetGravityDirection();
         Vector3 compositeForce = gravityForce;
         _rigidbody.AddForce(compositeForce, ForceMode.Acceleration);

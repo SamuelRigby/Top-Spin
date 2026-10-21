@@ -1,59 +1,40 @@
-using System.Collections.Generic;
 using UnityEngine;
 
+[DefaultExecutionOrder(-200)]
 [RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(CapsuleCollider))]
+[RequireComponent(typeof(CustomGravity))]
 public class GroundCheck : MonoBehaviour
 {
-    public bool IsGrounded => _groundColliders.Count > 0;
-    private readonly HashSet<Collider> _groundColliders = new();
+    [SerializeField] private float _checkDistance = 0.08f;
+    [SerializeField] private float _minGroundDot = 0.5f;
+    public bool IsGrounded { get; private set; }
     private CustomGravity _customGravity;
+    private CapsuleCollider _capsule;
 
     private void Awake()
     {
         _customGravity = GetComponent<CustomGravity>();
+        _capsule = GetComponent<CapsuleCollider>();
     }
 
-    private void OnCollisionEnter(Collision collision)
+    private void FixedUpdate()
     {
-        CheckGroundContact(collision);
+        IsGrounded = CheckGround();
     }
 
-    private void OnCollisionStay(Collision collision)
+    private bool CheckGround()
     {
-        CheckGroundContact(collision);
-    }
+        Vector3 localUp = -_customGravity.GetGravityDirection();
+        Vector3 origin = transform.TransformPoint(_capsule.center);
+        float radius = _capsule.radius * 0.9f;
+        float distance = _capsule.height / 2 - radius + _checkDistance;
 
-    private void OnCollisionExit(Collision collision)
-    {
-        _groundColliders.Remove(collision.collider);
-    }
-
-    private void OnDisable()
-    {
-        _groundColliders.Clear();
-    }
-
-    private void CheckGroundContact(Collision collision)
-    {
-        Vector3 localUp = _customGravity != null
-            ? -_customGravity.GetGravityDirection()
-            : transform.up;
-
-        if (localUp.sqrMagnitude < 0.0001f)
+        if (Physics.SphereCast(origin, radius, -localUp, out RaycastHit hit, distance, ~0, QueryTriggerInteraction.Ignore))
         {
-            localUp = transform.up;
+            return Vector3.Dot(hit.normal, localUp) >= _minGroundDot;
         }
 
-        for (int i = 0; i < collision.contactCount; i++)
-        {
-            if (Vector3.Dot(collision.GetContact(i).normal, localUp) >= 0.5f)
-            {
-                _groundColliders.Add(collision.collider);
-                return;
-            }
-        }
-
-        _groundColliders.Remove(collision.collider);
+        return false;
     }
 }

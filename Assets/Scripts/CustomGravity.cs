@@ -32,8 +32,12 @@ public class CustomGravity : MonoBehaviour
 
     public Vector3 GetGravityDirection()
     {
-        Vector3 vector3D = transform.position - Vector3.zero;
-        return new Vector3(vector3D.x, vector3D.y, 0).normalized;
+        return new Vector3(transform.position.x, transform.position.y, 0).normalized;
+    }
+
+    public float GetRadialDistance()
+    {
+        return new Vector3(transform.position.x, transform.position.y, 0).magnitude;
     }
 
     private void ApplyGravity()
@@ -52,7 +56,7 @@ public class CustomGravity : MonoBehaviour
 
     private void CalculateMultipliers()
     {
-        _gravityMultiplier = (Vector3.zero - transform.position).magnitude / _maxRadialDistance;
+        _gravityMultiplier = GetRadialDistance() / _maxRadialDistance;
     }
 
     private void OnCollisionEnter(Collision collision)

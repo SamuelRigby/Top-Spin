@@ -691,7 +691,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
   playerWalkSpeed: 7
   rotationSharpness: 12
-  jumpSpeed: 18
+  jumpSpeed: 12
   cylinder: {fileID: 0}
   cameraTransform: {fileID: 0}
   cameraUp: {fileID: 0}
@@ -745,7 +745,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CustomGravity
   _gravityMagnitude: 9.81
-  _centrifugalMagnitude: 9.81
   _maxRadialDistance: 100
 --- !u!95 &6444783411152068889
 Animator:

@@ -203,7 +203,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 463c738087c00fe41803c578706d67b5, type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.3
+      value: 0.25
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 463c738087c00fe41803c578706d67b5, type: 3}
       propertyPath: m_LocalScale.z
@@ -219,7 +219,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 463c738087c00fe41803c578706d67b5, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 3.8
+      value: 3.68
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 463c738087c00fe41803c578706d67b5, type: 3}
       propertyPath: m_LocalRotation.w
@@ -257,7 +257,8 @@ PrefabInstance:
       propertyPath: m_Name
       value: base_catwalk_cap
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 3451118302482216456, guid: 463c738087c00fe41803c578706d67b5, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -281,7 +282,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 463c738087c00fe41803c578706d67b5, type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.3
+      value: 0.25
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 463c738087c00fe41803c578706d67b5, type: 3}
       propertyPath: m_LocalScale.z
@@ -297,7 +298,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 463c738087c00fe41803c578706d67b5, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -3.8
+      value: -3.68
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 463c738087c00fe41803c578706d67b5, type: 3}
       propertyPath: m_LocalRotation.w
@@ -335,7 +336,8 @@ PrefabInstance:
       propertyPath: m_Name
       value: base_catwalk_cap (1)
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 3451118302482216456, guid: 463c738087c00fe41803c578706d67b5, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -359,7 +361,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 1a3a6d8b8c5307e4eb7b20358c93e018, type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.5
+      value: 0.51
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 1a3a6d8b8c5307e4eb7b20358c93e018, type: 3}
       propertyPath: m_LocalScale.z
@@ -420,37 +422,8 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 1a3a6d8b8c5307e4eb7b20358c93e018, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1678351457875259466}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1a3a6d8b8c5307e4eb7b20358c93e018, type: 3}
---- !u!1 &8250992817257807550 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 1a3a6d8b8c5307e4eb7b20358c93e018, type: 3}
-  m_PrefabInstance: {fileID: 9097275170891908079}
-  m_PrefabAsset: {fileID: 0}
---- !u!65 &1678351457875259466
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8250992817257807550}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 20, y: 20, z: 20}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!4 &8776032350791476228 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 1a3a6d8b8c5307e4eb7b20358c93e018, type: 3}
